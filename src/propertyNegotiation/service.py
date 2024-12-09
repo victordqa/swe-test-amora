@@ -1,6 +1,7 @@
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from ..db.models.propertyNegotiation import PropertyNegotiation as PropertyModel
+from ..db.models.propertyNegotiation import PropertyNegotiationModel
 from .schema import PropertyNegotiation, PropertyResponse, RiskAssessment
 
 
@@ -11,7 +12,7 @@ def create_property_negotiation_service(
     risk_assessment = assess_risk(property)
 
     # Create the property negotiation entry in the database
-    db_property = PropertyModel(
+    db_property = PropertyNegotiationModel(
         property_name=property.property_name,
         property_value=property.property_value,
         client_credit_score=property.client_credit_score,
@@ -47,3 +48,22 @@ def assess_risk(property: PropertyNegotiation) -> RiskAssessment:
             approved=False, reason="Property value exceeds 30% of annual income."
         )
     return RiskAssessment(approved=True, reason="Approved")
+
+
+def get_property_negotiation_service(id: int, db: Session) -> PropertyResponse:
+    property_negotiation = (
+        db.query(PropertyNegotiationModel)
+        .filter(PropertyNegotiationModel.id == id)
+        .first()
+    )
+    if not property_negotiation:
+        raise HTTPException(status_code=404, detail="Property not found")
+    return PropertyResponse(
+        id=property_negotiation.id,
+        property_name=property_negotiation.property_name,
+        property_value=property_negotiation.property_value,
+        client_credit_score=property_negotiation.client_credit_score,
+        client_monthly_income_in_cents=property_negotiation.client_monthly_income_in_cents,
+        approved=property_negotiation.approved,
+        reason=property_negotiation.reason,
+    )

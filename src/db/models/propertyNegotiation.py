@@ -3,7 +3,7 @@ from sqlalchemy import Boolean, Column, Integer, String
 from ..database import Base
 
 
-class PropertyNegotiation(Base):
+class PropertyNegotiationModel(Base):
     __tablename__ = "properties"
 
     id = Column(Integer, primary_key=True, index=True)
