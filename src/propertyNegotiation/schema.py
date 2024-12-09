@@ -19,7 +19,3 @@ class PropertyNegotiationDb(PropertyNegotiation, RiskAssessment):
 
 class PropertyResponse(PropertyNegotiation, RiskAssessment):
     id: int
-
-
-class HTTPError(BaseModel):
-    detail: str

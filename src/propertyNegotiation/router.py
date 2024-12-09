@@ -2,8 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from src.db.database import get_db
+from utils.schema import HTTPError
 
-from .schema import HTTPError, PropertyNegotiation, PropertyResponse
+from .schema import PropertyNegotiation, PropertyResponse
 from .service import (
     create_property_negotiation_service,
     get_property_negotiation_service,
