@@ -14,7 +14,7 @@ def create_property_negotiation_service(
     # Create the property negotiation entry in the database
     db_property = PropertyNegotiationModel(
         property_name=property.property_name,
-        property_value=property.property_value,
+        property_value_in_cents=property.property_value_in_cents,
         client_credit_score=property.client_credit_score,
         client_monthly_income_in_cents=property.client_monthly_income_in_cents,
         approved=risk_assessment.approved,
@@ -27,7 +27,7 @@ def create_property_negotiation_service(
     return PropertyResponse(
         id=db_property.id,
         property_name=db_property.property_name,
-        property_value=db_property.property_value,
+        property_value_in_cents=db_property.property_value_in_cents,
         client_credit_score=db_property.client_credit_score,
         client_monthly_income_in_cents=db_property.client_monthly_income_in_cents,
         approved=risk_assessment.approved,
@@ -37,17 +37,23 @@ def create_property_negotiation_service(
 
 # Helper function for risk assessment
 def assess_risk(property: PropertyNegotiation) -> RiskAssessment:
-    if property.property_value > 10000000 or property.property_value < 100000:
+    if (
+        property.property_value_in_cents > 10000000
+        or property.property_value_in_cents < 100000
+    ):
         return RiskAssessment(
             approved=False, reason="Property value is outside acceptable range."
         )
     if property.client_credit_score < 500:
         return RiskAssessment(approved=False, reason="Credit score is too low.")
-    if property.property_value > property.client_monthly_income_in_cents * 12 * 0.3:
+    if (
+        property.property_value_in_cents
+        > property.client_monthly_income_in_cents * 12 * 0.3
+    ):
         return RiskAssessment(
             approved=False, reason="Property value exceeds 30% of annual income."
         )
-    return RiskAssessment(approved=True, reason="Approved")
+    return RiskAssessment(approved=True, reason="All requirements are met")
 
 
 def get_property_negotiation_service(id: int, db: Session) -> PropertyResponse:
@@ -61,7 +67,7 @@ def get_property_negotiation_service(id: int, db: Session) -> PropertyResponse:
     return PropertyResponse(
         id=property_negotiation.id,
         property_name=property_negotiation.property_name,
-        property_value=property_negotiation.property_value,
+        property_value_in_cents=property_negotiation.property_value_in_cents,
         client_credit_score=property_negotiation.client_credit_score,
         client_monthly_income_in_cents=property_negotiation.client_monthly_income_in_cents,
         approved=property_negotiation.approved,

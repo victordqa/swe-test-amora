@@ -1,10 +1,11 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from typing_extensions import Annotated
 
 
 class PropertyNegotiation(BaseModel):
     property_name: str
-    property_value: int
-    client_credit_score: int
+    property_value_in_cents: Annotated[int, Field(ge=0)]
+    client_credit_score: Annotated[int, Field(ge=0, le=1000)]
     client_monthly_income_in_cents: int
 
 

@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from src.db.database import get_db
-from utils.schema import HTTPError
 
+from ..utils.schema import HTTPError
 from .schema import PropertyNegotiation, PropertyResponse
 from .service import (
     create_property_negotiation_service,
@@ -24,7 +24,7 @@ def create_property_negotiation(
 @propertyNegotiationRouter.get(
     "/{id}",
     response_model=PropertyResponse,
-    responses={404: {"model": HTTPError, "description": "Property not found"}},
+    responses={404: {"model": HTTPError, "description": "Negotiation not found"}},
 )
 def get_property_negotiation(id: int, db: Session = Depends(get_db)):
     propertyNegotiationItem = get_property_negotiation_service(id, db)
