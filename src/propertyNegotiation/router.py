@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from src.db.database import get_db
 
-from .schema import PropertyNegotiation, PropertyResponse
+from .schema import HTTPError, PropertyNegotiation, PropertyResponse
 from .service import (
     create_property_negotiation_service,
     get_property_negotiation_service,
@@ -20,7 +20,11 @@ def create_property_negotiation(
     return property_data
 
 
-@propertyNegotiationRouter.get("/{id}", response_model=PropertyResponse)
+@propertyNegotiationRouter.get(
+    "/{id}",
+    response_model=PropertyResponse,
+    responses={404: {"model": HTTPError, "description": "Property not found"}},
+)
 def get_property_negotiation(id: int, db: Session = Depends(get_db)):
     propertyNegotiationItem = get_property_negotiation_service(id, db)
     return propertyNegotiationItem
