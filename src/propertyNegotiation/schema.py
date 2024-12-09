@@ -13,5 +13,9 @@ class RiskAssessment(BaseModel):
     reason: str
 
 
+class PropertyNegotiationDb(PropertyNegotiation, RiskAssessment):
+    pass
+
+
 class PropertyResponse(PropertyNegotiation, RiskAssessment):
     id: int

@@ -1,47 +1,23 @@
-from typing import Dict
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
 
-from fastapi import APIRouter, HTTPException
+from src.db.database import get_db
 
 from .schema import PropertyNegotiation, PropertyResponse
-from .service import assess_risk
+from .service import create_property_negotiation_service
 
 propertyNegotiationRouter = APIRouter()
 
-# Mock database
-mock_db: Dict[int, dict] = {}
 
-
-# Endpoint to create a new "property"
-@propertyNegotiationRouter.post(
-    "/",
-    response_model=PropertyResponse,
-    summary="Create a new property negotiation",
-    description="Create a new property negotiation and assess its risk based on given parameters.",
-)
-def create_property(property: PropertyNegotiation):
-    new_id = len(mock_db) + 1
-    risk_assessment = assess_risk(property)
-    property_data = property.dict()
-    property_data.update(
-        {
-            "id": new_id,
-            "approved": risk_assessment.approved,
-            "reason": risk_assessment.reason,
-        }
-    )
-    mock_db[new_id] = property_data
+@propertyNegotiationRouter.post("/", response_model=PropertyResponse)
+def create_property(property: PropertyNegotiation, db: Session = Depends(get_db)):
+    property_data = create_property_negotiation_service(db, property)
     return property_data
 
 
-# Endpoint to get "property" details by ID
-@propertyNegotiationRouter.get(
-    "/{id}",
-    response_model=PropertyResponse,
-    summary="Get property negotiation details",
-    description="Retrieve the details of a property negotiation and its risk assessment by ID.",
-)
-def get_property(id: int):
-    property = mock_db.get(id)
+@propertyNegotiationRouter.get("/{id}", response_model=PropertyResponse)
+def get_property(id: int, db: Session = Depends(get_db)):
+    property = db.query(PropertyModel).filter(PropertyModel.id == id).first()
     if not property:
         raise HTTPException(status_code=404, detail="Property not found")
     return property
