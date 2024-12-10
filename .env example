@@ -1,0 +1,7 @@
+# .env file
+POSTGRES_PASSWORD=yourpass
+POSTGRES_USER=user
+POSTGRES_DB=amora_dev
+
+SQLALCHEMY_DATABASE_URL=postgresql+psycopg2://user:yourpass@localhost:5431/amora_dev
+

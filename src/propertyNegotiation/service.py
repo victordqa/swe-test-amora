@@ -51,7 +51,7 @@ def assess_risk(property: PropertyNegotiation) -> RiskAssessment:
         "property_value_min": 100000 * 100,  # value in cents
         "property_value_max": 10000000 * 100,  # value in cents
         "credit_score_min": 500,
-        "income_to_property_ratio": 0.3,
+        "property_to_income_ratio": 0.3,
     }
 
     reasons = []
@@ -69,7 +69,7 @@ def assess_risk(property: PropertyNegotiation) -> RiskAssessment:
         property.property_value_in_cents
         > property.client_monthly_income_in_cents
         * 12
-        * RESTRICTIONS["income_to_property_ratio"]
+        * RESTRICTIONS["property_to_income_ratio"]
     ):
         reasons.append("Property value exceeds 30% of annual income")
 
