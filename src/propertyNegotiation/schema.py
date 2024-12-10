@@ -20,3 +20,10 @@ class PropertyNegotiationDb(PropertyNegotiation, RiskAssessment):
 
 class PropertyResponse(PropertyNegotiationDb):
     id: int
+
+
+class Restrictions(BaseModel):
+    property_value_min_in_cents: int
+    property_value_max_in_cents: int
+    credit_score_min: int
+    income_to_property_ratio: float
