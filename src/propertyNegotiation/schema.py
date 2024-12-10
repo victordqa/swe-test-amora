@@ -18,5 +18,5 @@ class PropertyNegotiationDb(PropertyNegotiation, RiskAssessment):
     pass
 
 
-class PropertyResponse(PropertyNegotiation, RiskAssessment):
+class PropertyResponse(PropertyNegotiationDb):
     id: int

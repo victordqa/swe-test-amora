@@ -47,7 +47,6 @@ def get_property_negotiation_service(id: int, db: Session) -> PropertyResponse:
 
 
 def assess_risk(property: PropertyNegotiation) -> RiskAssessment:
-
     RESTRICTIONS = {
         "property_value_min": 100000 * 100,  # value in cents
         "property_value_max": 10000000 * 100,  # value in cents
@@ -55,22 +54,26 @@ def assess_risk(property: PropertyNegotiation) -> RiskAssessment:
         "income_to_property_ratio": 0.3,
     }
 
+    reasons = []
+
     if (
         property.property_value_in_cents > RESTRICTIONS["property_value_max"]
         or property.property_value_in_cents < RESTRICTIONS["property_value_min"]
     ):
-        return RiskAssessment(
-            approved=False, reason="Property value is outside acceptable range."
-        )
+        reasons.append("Property value is outside acceptable range")
+
     if property.client_credit_score < RESTRICTIONS["credit_score_min"]:
-        return RiskAssessment(approved=False, reason="Credit score is too low.")
+        reasons.append("Credit score is too low")
+
     if (
         property.property_value_in_cents
         > property.client_monthly_income_in_cents
         * 12
         * RESTRICTIONS["income_to_property_ratio"]
     ):
-        return RiskAssessment(
-            approved=False, reason="Property value exceeds 30% of annual income."
-        )
+        reasons.append("Property value exceeds 30% of annual income")
+
+    if reasons:
+        return RiskAssessment(approved=False, reason=", ".join(reasons))
+
     return RiskAssessment(approved=True, reason="All requirements are met")
